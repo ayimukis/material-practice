@@ -1,12 +1,39 @@
-import React from "react";
+import React, { useEffect, useState, Component } from "react";
 import { Typography, AppBar, Button, Card, CardActions, CardContent, CardMedia, CssBaseline, Grid, Toolbar, Container } from '@material-ui/core';
 import { PhotoCamera } from "@material-ui/icons";
 import useStyles from "./style";
+import axios from 'axios';
 
-const cards = [1,2,3,4,5,6,7,8,9,10]
+// axios
+// .get("http://localhost:8080/pass/common/getCommCodeList?page=1&pageSize=10000")
+// .then(({ data }) => console.log(data));
 
 const App = () => {
+
+    const baseUrl = 'http://localhost:8080'
+
+    async function getCommCodeList() {
+        await axios
+            .get('/pass/common/getCommCodeList?page=1&pageSize=10000')
+            .then((response) => {
+                console.log(response.data)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+
+    }
+
     const classes = useStyles();
+    const [posts, setPosts] = useState([]);
+    useEffect(() => {
+        axios
+        .get("/pass/common/getCommCodeList?page=1&pageSize=10000")
+        .then(({ data }) => setPosts(data.list));
+
+        // getCommCodeList()
+
+    }, []);
     return (
         <>
             <CssBaseline />
@@ -28,7 +55,7 @@ const App = () => {
                             Hello everyone This is a photo album and I'm trying to make this sentence as long as possible so we can see how does it look like on the screen
                         </Typography>
                             <div className={classes.button}>
-                                <Grid container spacing={2} justify="center">
+                                <Grid container spacing={2} justifyContent="center">
                                     <Grid item>
                                         <Button variant="contained" color="primary">
                                             See my photos
@@ -48,8 +75,9 @@ const App = () => {
                 </div>
                 <Container className={classes.cardGrid} maxWidth="md">
                     <Grid container spacing={4}>
-                        {cards.map((card) => (
-                            <Grid item key={card} xs={12} sm={6} md={4}>
+                        {posts.map((post, index) => (
+                            
+                            <Grid item key={index} xs={12} sm={6} md={4}>
                                 <Card className={classes.card}>
                                     <CardMedia
                                         className={classes.cardMedia}
@@ -57,11 +85,11 @@ const App = () => {
                                         title="Image title"
                                     />
                                     <CardContent className={classes.cardContent}>
-                                        <Typography gutterBottom variant="h5">
-                                            Heading
+                                        <Typography gutterBottom variant="h5" >
+                                            {post.codeCd}
                                         </Typography>
                                         <Typography>
-                                            This is media card. You can use this section to describe the content.
+                                            {post.codeNm}
                                         </Typography>
                                     </CardContent>
                                     <CardActions>
